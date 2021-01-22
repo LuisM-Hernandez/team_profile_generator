@@ -4,6 +4,7 @@ const Intern = require("./lib/Intern");
 const inquirer = require("inquirer");
 const path = require("path");
 const fs = require("fs");
+const validator = require("validator");
 
 const OUTPUT_DIR = path.resolve(__dirname, "output");
 const outputPath = path.join(OUTPUT_DIR, "team.html");
@@ -22,32 +23,52 @@ function managerCreation() {
             type: "input",
             name: "managerName",
             message: "What is your manager's name?",
-            //Validate input here
+            validate: function (name){
+                if ((/^[a-zA-Z]+ [a-zA-Z]+$/).test(name) || (/^[a-zA-Z]+$/).test(name)){
+                    return true;
+                }
+                return "Please Input a valid name";
+            }
         },
         {
             type: "input",
             name: "managerId",
             message: "What is the manager's id?",
-            //Validate input here
+            validate: function (id){
+                if (validator.isNumeric(id)){
+                    return true;
+                }
+                return "Please input only numbers";
+            }
         },
         {
             type: "input",
             name: "managerEmail",
-            message: "What is the manager's email?"
-            //Validate input here
+            message: "What is the manager's email?",
+            validate: function (email)  {
+                if (validator.isEmail(email)){
+                    return true;
+                }
+                return "Please enter valid email";
+                
+            } 
         },
         {
             type: "input",
             name: "managerOffice",
             message: "What is the manager office number",
-            //Validate input here
+            validate: function (office){
+                if (validator.isNumeric(office)){
+                    return true;
+                }
+                return "Please input only numbers";
+            }
         },
         {
             type: "list",
             name: "newEmployee",
             message: "Do you want to add a new employee?",
             choices: ["Yes", "No"]
-            //Validate input here
         },
 
         // This promise have the variable that it stores all the answers the user input 
@@ -83,30 +104,50 @@ function newEmployee() {
             name: "memberRole",
             message: "What is this employee's role?",
             choices: ["Engineer", "Intern"]
-            //Validate input here
         },
         {
             type: "input",
             name: "memberName",
             message: "What is your employee name?",
-            //Validate input here
+            validate: function (name){
+                if ((/^[a-zA-Z]+ [a-zA-Z]+$/).test(name) || (/^[a-zA-Z]+$/).test(name)){
+                    return true;
+                }
+                return "Please Input a valid name";
+            }
         },
         {
             type: "input",
             name: "memberId",
             message: "What is the employee id?",
-            //Validate input here
-        },
+            validate: function (id){
+                if (validator.isNumeric(id)){
+                    return true;
+                }
+                return "Please input only numbers";
+            }        },
         {
             type: "input",
             name: "memberEmail",
-            message: "What is the employee email?"
-            //Validate input here
+            message: "What is the employee email?",
+            validate: function (email)  {
+                if (validator.isEmail(email)){
+                    return true;
+                }
+                return "Please enter valid email";
+                
+            } 
         },
         {
             type: "input",
             name: "github",
             message: "What is the engineer's github",
+            validate: function (name){
+                if ((/^[A-Za-z0-9_.-]+$/).test(name)){
+                    return true;
+                }
+                return "Please Input a valid name";
+            },
             when: engineerEmployee => {
                 if (engineerEmployee.memberRole == "Engineer") {
                     return true
@@ -118,6 +159,12 @@ function newEmployee() {
             type: "input",
             name: "school",
             message: "What is the intern's school",
+            validate: function (school){
+                if ((/^[a-zA-Z]+ [a-zA-Z]+$/).test(school) || (/^[a-zA-Z]+$/).test(school)){
+                    return true;
+                }
+                return "Please Input a valid name";
+            },
             when: internEmployee => {
                 if (internEmployee.memberRole == "Intern") {
                     return true
@@ -136,9 +183,7 @@ function newEmployee() {
 
         if (answers.memberRole === "Engineer") {
             const engineer = new Engineer(answers.memberName, answers.memberId, answers.memberEmail, answers.github);
-            // console.log(engineer);
             teamArray.push(engineer);
-            // console.log(teamArray);
         }
         if (answers.memberRole === "Intern") {
             const intern = new Intern(answers.memberName, answers.memberId, answers.memberEmail, answers.school);
@@ -170,6 +215,7 @@ function createTeam() {
     fs.writeFile("./team.html", html, function (err) {
         if (err) throw err;
     });
+
 }
 
 managerCreation();
