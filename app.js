@@ -212,7 +212,10 @@ function newEmployee() {
 //This function will create the html with the user's answerd questions from each member of the team
 function createTeam() {
     const html = render(teamArray);
-    fs.writeFile("./team.html", html, function (err) {
+    fs.mkdir(OUTPUT_DIR, { recursive: true }, (err) => {
+        if (err) throw err;
+      });
+    fs.writeFile(outputPath, html, function (err) {
         if (err) throw err;
     });
 
