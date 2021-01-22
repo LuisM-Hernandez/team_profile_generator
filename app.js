@@ -84,21 +84,21 @@ function newEmployee() {
         {
             type: "input",
             name: "memberId",
-            message: "What is the id?",
+            message: "What is the employee id?",
             //Validate input here
         },
         {
             type: "input",
             name: "memberEmail",
-            message: "What is the email?"
+            message: "What is the employee email?"
             //Validate input here
         },
         {
             type: "input",
             name: "github",
             message: "What is the engineer's github",
-            when: newAnswers =>{
-                if(newAnswers.memberRole === "Engineer"){
+            when: engineerEmployee =>{
+                if(engineerEmployee.memberRole == "Engineer"){
                     return true
                 }
                 return false
@@ -108,21 +108,40 @@ function newEmployee() {
             type: "input",
             name: "school",
             message: "What is the intern's school",
-            when: newAnswers =>{
-                if(newAnswers.memberRole === "Intern"){
+            when: internEmployee =>{
+                if(internEmployee.memberRole == "Intern"){
                     return true
                 }
                 return false
             }
         },
+        {
+            type: "list",
+            name: "newEmployee",
+            message: "Do you want to add a new employee?",
+            choices: ["Yes", "No"],
+            }
+        
 
 
     ]).then(answers => {
-        const engineer = new Engineer (answers.memberName, answers.memberId, answers.memberEmail, answers.github);
-        console.log(engineer);
-        const intern = new Intern (answers.memberName, answers.memberId, answers.memberEmail, answers.school);
-        console.log(intern);
 
+        if(answers.memberRole === "Engineer"){
+            const engineer = new Engineer (answers.memberName, answers.memberId, answers.memberEmail, answers.github);
+            console.log(engineer);
+        }
+        if(answers.memberRole === "Intern"){
+            const intern = new Intern (answers.memberName, answers.memberId, answers.memberEmail, answers.school);
+            console.log(intern);
+        }
+       
+        if(answers.newEmployee == "Yes"){
+            return newEmployee();
+        }
+        else{
+           console.log("createHTML()");
+        }
+     
         })
         .catch(error => {
             if (error.isTtyError) {
