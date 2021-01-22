@@ -8,10 +8,15 @@ const fs = require("fs");
 const OUTPUT_DIR = path.resolve(__dirname, "output");
 const outputPath = path.join(OUTPUT_DIR, "team.html");
 
+const teamArray = [];
+
 const render = require("./lib/htmlRenderer");
 
+
+//This function will start the code and prompt the user to answer some questions about the manager of the team
 function managerCreation() {
 
+    //Prompt manager questions
     inquirer.prompt([
         {
             type: "input",
@@ -45,28 +50,33 @@ function managerCreation() {
             //Validate input here
         },
 
+        // This promise have the variable that it stores all the answers the user input 
     ]).then(answers => {
+        // Const manager creates a new manager with the answers provided above
         const manager = new Manager(answers.managerName, answers.managerId, answers.managerEmail, answers.managerOffice);
-        console.log(manager);
+        //We push the new manager to the team array
+        teamArray.push(manager)
+
         if (answers.newEmployee === "Yes") {
             newEmployee();
         }
 
-        else{
-            console.log("Done!!!");
+        else {
+            createTeam();
+            console.log("File created");
         }
+        
     })
         .catch(error => {
             if (error.isTtyError) {
                 console.log("There was an error");
             }
-
-
         });
 }
 
+//This function will run if the user decides to create another member on the team
 function newEmployee() {
-    
+
     inquirer.prompt([
         {
             type: "list",
@@ -97,8 +107,8 @@ function newEmployee() {
             type: "input",
             name: "github",
             message: "What is the engineer's github",
-            when: engineerEmployee =>{
-                if(engineerEmployee.memberRole == "Engineer"){
+            when: engineerEmployee => {
+                if (engineerEmployee.memberRole == "Engineer") {
                     return true
                 }
                 return false
@@ -108,8 +118,8 @@ function newEmployee() {
             type: "input",
             name: "school",
             message: "What is the intern's school",
-            when: internEmployee =>{
-                if(internEmployee.memberRole == "Intern"){
+            when: internEmployee => {
+                if (internEmployee.memberRole == "Intern") {
                     return true
                 }
                 return false
@@ -120,29 +130,32 @@ function newEmployee() {
             name: "newEmployee",
             message: "Do you want to add a new employee?",
             choices: ["Yes", "No"],
-            }
-        
-
+        }
 
     ]).then(answers => {
 
-        if(answers.memberRole === "Engineer"){
-            const engineer = new Engineer (answers.memberName, answers.memberId, answers.memberEmail, answers.github);
-            console.log(engineer);
+        if (answers.memberRole === "Engineer") {
+            const engineer = new Engineer(answers.memberName, answers.memberId, answers.memberEmail, answers.github);
+            // console.log(engineer);
+            teamArray.push(engineer);
+            // console.log(teamArray);
         }
-        if(answers.memberRole === "Intern"){
-            const intern = new Intern (answers.memberName, answers.memberId, answers.memberEmail, answers.school);
-            console.log(intern);
+        if (answers.memberRole === "Intern") {
+            const intern = new Intern(answers.memberName, answers.memberId, answers.memberEmail, answers.school);
+            teamArray.push(intern);
         }
-       
-        if(answers.newEmployee == "Yes"){
+
+        if (answers.newEmployee == "Yes") {
             return newEmployee();
         }
-        else{
-           console.log("createHTML()");
+        else {
+            
+            createTeam();
+            console.log("createHTML()");
         }
-     
-        })
+        console.log(teamArray);
+
+    })
         .catch(error => {
             if (error.isTtyError) {
                 console.log("There was an error");
@@ -151,29 +164,12 @@ function newEmployee() {
 
 }
 
-// const intern = new Intern (answers.memberName, answers.memberId, answers.memberEmail, answers.school);
-
-// Write code to use inquirer to gather information about the development team members,
-// and to create objects for each team member (using the correct classes as blueprints!)
-
-// After the user has input all employees desired, call the `render` function (required
-// above) and pass in an array containing all employee objects; the `render` function will
-// generate and return a block of HTML including templated divs for each employee!
-
-// After you have your html, you're now ready to create an HTML file using the HTML
-// returned from the `render` function. Now write it to a file named `team.html` in the
-// `output` folder. You can use the variable `outputPath` above target this location.
-// Hint: you may need to check if the `output` folder exists and create it if it
-// does not.
-
-// HINT: each employee type (manager, engineer, or intern) has slightly different
-// information; write your code to ask different questions via inquirer depending on
-// employee type.
-
-// HINT: make sure to build out your classes first! Remember that your Manager, Engineer,
-// and Intern classes should all extend from a class named Employee; see the directions
-// for further information. Be sure to test out each class and verify it generates an
-// object with the correct structure and methods. This structure will be crucial in order
-// for the provided `render` function to work! ```
+//This function will create the html with the user's answerd questions from each member of the team
+function createTeam() {
+    const html = render(teamArray);
+    fs.writeFile("./team.html", html, function (err) {
+        if (err) throw err;
+    });
+}
 
 managerCreation();
