@@ -10,49 +10,129 @@ const outputPath = path.join(OUTPUT_DIR, "team.html");
 
 const render = require("./lib/htmlRenderer");
 
+function managerCreation() {
+
+    inquirer.prompt([
+        {
+            type: "input",
+            name: "managerName",
+            message: "What is your manager's name?",
+            //Validate input here
+        },
+        {
+            type: "input",
+            name: "managerId",
+            message: "What is the manager's id?",
+            //Validate input here
+        },
+        {
+            type: "input",
+            name: "managerEmail",
+            message: "What is the manager's email?"
+            //Validate input here
+        },
+        {
+            type: "input",
+            name: "managerOffice",
+            message: "What is the manager office number",
+            //Validate input here
+        },
+        {
+            type: "list",
+            name: "newEmployee",
+            message: "Do you want to add a new employee?",
+            choices: ["Yes", "No"]
+            //Validate input here
+        },
+
+    ]).then(answers => {
+        const manager = new Manager(answers.managerName, answers.managerId, answers.managerEmail, answers.managerOffice);
+        console.log(manager);
+        if (answers.newEmployee === "Yes") {
+            newEmployee();
+        }
+
+        else{
+            console.log("Done!!!");
+        }
+    })
+        .catch(error => {
+            if (error.isTtyError) {
+                console.log("There was an error");
+            }
 
 
-    function renderManager(){
+        });
+}
 
-        inquirer.prompt([
-            
-            {
-                type: "input",
-                name: "managerName",
-                message: "What is your manager's name?",
-                //Validate input here
-            },
-            {
-                type: "input",
-                name: "managerId",
-                message: "What is the manager's id?",
-                //Validate input here
-            },
-            {
-                type: "input",
-                name: "managerEmail",
-                message: "What is the manager's email?" 
-                //Validate input here
-            },
-            {
-                type: "input",
-                name: "managerOffice",
-                message: "What is the manager office number",
-                //Validate input here
-            },
-            
-        ]).then(answers => {
-            const manager = new Manager (answers.managerName, answers.managerId, answers.managerEmail, answers.managerOffice);
-            console.log(manager);
+function newEmployee() {
+    
+    inquirer.prompt([
+        {
+            type: "list",
+            name: "memberRole",
+            message: "What is this employee's role?",
+            choices: ["Engineer", "Intern"]
+            //Validate input here
+        },
+        {
+            type: "input",
+            name: "memberName",
+            message: "What is your employee name?",
+            //Validate input here
+        },
+        {
+            type: "input",
+            name: "memberId",
+            message: "What is the id?",
+            //Validate input here
+        },
+        {
+            type: "input",
+            name: "memberEmail",
+            message: "What is the email?"
+            //Validate input here
+        },
+        {
+            type: "input",
+            name: "github",
+            message: "What is the engineer's github",
+            when: newAnswers =>{
+                if(newAnswers.memberRole === "Engineer"){
+                    return true
+                }
+                return false
+            }
+        },
+        {
+            type: "input",
+            name: "school",
+            message: "What is the intern's school",
+            when: newAnswers =>{
+                if(newAnswers.memberRole === "Intern"){
+                    return true
+                }
+                return false
+            }
+        },
+
+
+    ]).then(answers => {
+        const engineer = new Engineer (answers.memberName, answers.memberId, answers.memberEmail, answers.github);
+        console.log(engineer);
+        const intern = new Intern (answers.memberName, answers.memberId, answers.memberEmail, answers.school);
+        console.log(intern);
+
         })
         .catch(error => {
-            if(error.isTtyError) {
+            if (error.isTtyError) {
                 console.log("There was an error");
-            } 
+            }
         });
-        
-    }
 
+}
+
+// const intern = new Intern (answers.memberName, answers.memberId, answers.memberEmail, answers.school);
 
 // Write code to use inquirer to gather information about the development team members,
 // and to create objects for each team member (using the correct classes as blueprints!)
@@ -77,4 +157,4 @@ const render = require("./lib/htmlRenderer");
 // object with the correct structure and methods. This structure will be crucial in order
 // for the provided `render` function to work! ```
 
-renderManager();
+managerCreation();
